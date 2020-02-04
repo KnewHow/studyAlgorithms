@@ -150,7 +150,7 @@ void testAVLTreeGen() {
 }
 
 void testPerformance() {
-	int n = 100000;
+	int n = 10000;
 	PTree root = NULL;
 	long int s1 = getCurrentMills();
 	for (int i = 0; i < n; i++) {
@@ -161,7 +161,10 @@ void testPerformance() {
 	}
 	long int s2 = getCurrentMills();
 	for (int i = 0; i < n; i++) {
+		DWORD  a1 = GetTickCount64();
 		find(root, i);
+		DWORD a2 = GetTickCount64();
+		printf("find [%d] took %d\n", i, (a2 - a1));
 	}
 	long int s3 = getCurrentMills();
 	printf("insert took time=%ld\n", s2 - s1);

@@ -3,6 +3,7 @@
 #include<malloc.h>
 #include"helper.h"
 #include"avltree.h"
+#include "hashTable.h"
 
 /**
  * Note: The returned array must be malloced, assume caller calls free().
@@ -113,18 +114,51 @@ int* twoSumWithAVLTree(int* nums, int numsSize, int target, int* returnSize) {
 	return NULL;
 }
 
+int* twoSumWithHashTable(
+	int* nums, 
+	int numsSize, 
+	int target, 
+	int* returnSize
+) {
+	PElement* table = NULL;
+	for (int i = 0; i < numsSize; i++) {
+		table = put(table, nums[i], i);
+	}
+	for (int i = 0; i < numsSize; i++) {
+		int y = target - nums[i];
+		PElement e = query(table, y, i);
+		// ур╣╫ак
+		if (e != NULL) {
+			int* r = (int*)malloc(2 * sizeof(int));
+			if (r == NULL) {
+				return NULL;
+			}
+			else {
+				r[0] = i;
+				r[1] = e->index;
+				*returnSize = 2;
+				return r;
+			}
+		}
+	}
+	return NULL;
+}
+
 
 
 int main() {
-	/*int nums[] = { 3,2,4 };
-	int target = 6;
+	int nums[] = { -3,4,3,90 };
+	int target = 0;
 	int returnSize = 0;
-	int* r = twoSumWithAVLTree(nums, sizeof(nums)/sizeof(int), target, &returnSize);
+	int* r = twoSumWithHashTable(nums, sizeof(nums)/sizeof(int), target, &returnSize);
 	for (int* p = r; p < r + returnSize; p++) {
 		printf("index=%d\n", *p);
 	}
-	free(r);*/
-	testPerformance();
+	free(r);
+	//PElement* table = NULL;
+	// table = initTable();
+	//for(int )
+	// testPerformance();
 	system("pause");
 	return	0;
 }
