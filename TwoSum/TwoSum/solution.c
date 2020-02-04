@@ -114,6 +114,7 @@ int* twoSumWithAVLTree(int* nums, int numsSize, int target, int* returnSize) {
 	return NULL;
 }
 
+// 使用 HashTabel 构建
 int* twoSumWithHashTable(
 	int* nums, 
 	int numsSize, 

@@ -149,6 +149,7 @@ void testAVLTreeGen() {
 	preOrderPrint(root);
 }
 
+// 性能测试，构建一棵 N 个节点的 AVL 树
 void testPerformance() {
 	int n = 10000;
 	PTree root = NULL;

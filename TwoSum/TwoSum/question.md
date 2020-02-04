@@ -185,6 +185,223 @@ int* twoSum(int* nums, int numsSize, int target, int* returnSize){
 
 既然是查找，除了先排序，然后使用二分查找以外，我们还可以直接构建一棵AVL(红黑树)树来查找。构建AVL树的时间复杂度为O(NlgN)，遍历查找的时间复杂度为：O(NlgN)，总的时间复杂度为：O(Nlgn)
 
+下面是我利用 AVL 树来构建搜索树，但是 构建一棵 N 个节点的 AVL 树 效率似乎有点低，后面我尝试使用红黑树来构建搜索树，先把 AVL 树的代码放上：
+
+```c
+#pragma once
+#include<stdlib.h>
+#include<malloc.h>
+#include<stdio.h>
+#include"helper.h"
+#include<Windows.h>
+
+/*AVL 树相关的操作*/
+typedef struct Node
+{
+	int value;
+	struct Node* left;
+	struct Node* right;
+	int height;
+} Tree, *PTree;
+
+// 根据值去查找节点
+PTree find(PTree root, int target) {
+	if (root == NULL) {
+		return NULL;
+	}else {
+		PTree temp = root;
+		while (temp != NULL) {
+			if (temp->value == target) {
+				return temp;
+			}
+			else if (target > temp->value) {
+				temp = temp->right;
+			}
+			else {
+				temp = temp->left;
+			}
+		}
+		return NULL;
+	}
+}
+
+int getMax(int a, int b) {
+	if (a > b) {
+		return a;
+	}
+	else {
+		return b;
+	}
+}
+
+int getHeight(PTree root) {
+	if (root == NULL) {
+		return 0;
+	}
+	else {
+		return getMax(getHeight(root->left),getHeight(root->right)) + 1;
+	}
+}
+
+// LL 调整
+PTree LL(PTree root) {
+	PTree b = root->left;
+	root->left = b->right;
+	b->right = root;
+	root->height = getMax(getHeight(root->left), getHeight(root->right)) + 1;
+	b->height = getMax(getHeight(b->left), getHeight(b->right)) + 1;
+	return b;
+}
+
+// RR 调整
+PTree RR(PTree root) {
+	PTree b = root->right;
+	root->right = b->left;
+	b->left = root;
+	root->height = getMax(getHeight(root->left), getHeight(root->right)) + 1;
+	b->height = getMax(getHeight(b->left), getHeight(b->right)) + 1;
+	return b;
+}
+
+// LR 调整
+PTree LR(PTree root) {
+	PTree b = RR(root->left);
+	root->left = b;
+	return LL(root);
+}
+
+// RL 调整
+PTree RL(PTree root) {
+	PTree b = LL(root->right);
+	root->right = b;
+	return RR(root);
+}
+
+// 添加一个元素
+PTree push(PTree root, int value) {
+	if (root == NULL) {
+		root = (PTree)malloc(sizeof(Tree));
+		if (root != NULL) {
+			root->value = value;
+			root->left = NULL;
+			root->right = NULL;
+			root->height = 0;
+		} else {
+			printf("[avl tree-push] malloc apply memory failure\n");
+			return NULL;
+		}
+	} else {
+		if (value <= root->value) {
+			root->left = push(root->left, value);
+			// 出现不平衡
+			if (getHeight(root->left) - getHeight(root->right) >= 2) {
+				if (value <= root->left->value) {
+					root = LL(root);
+				}
+				else {
+					root = LR(root);
+				}
+			}
+		}
+		else {
+			root->right = push(root->right, value);
+			// 出现不平衡
+			if (getHeight(root->right) - getHeight(root->left) >= 2) {
+				if (value <= root->right->value) {
+					root = RL(root);
+				}
+				else {
+					root = RR(root);
+				}
+			}
+		}
+	}
+	root->height = getMax(getHeight(root->left), getHeight(root->right)) + 1;
+	return root;
+}
+
+// 先序遍历
+void preOrderPrint(PTree root) {
+	if (root != NULL) {
+		printf("%d ", root->value);
+		preOrderPrint(root->left);
+		preOrderPrint(root->right);
+	}
+}
+
+// 测试 AVL 树的生成
+void testAVLTreeGen() {
+	int arr[] = { 30,15,41,33,50,35 };
+	PTree root = NULL;
+	for (int i = 0; i < sizeof(arr) / sizeof(int); i++) {
+		root = push(root, arr[i]);
+	}
+	preOrderPrint(root);
+}
+
+// 性能测试，构建一棵 N 个节点的 AVL 树
+void testPerformance() {
+	int n = 10000;
+	PTree root = NULL;
+	long int s1 = getCurrentMills();
+	for (int i = 0; i < n; i++) {
+		DWORD  a1 = GetTickCount64();
+		root = push(root, i);
+		DWORD a2 = GetTickCount64();
+		printf("push [%d] took %d\n", i, (a2 - a1));
+	}
+	long int s2 = getCurrentMills();
+	for (int i = 0; i < n; i++) {
+		DWORD  a1 = GetTickCount64();
+		find(root, i);
+		DWORD a2 = GetTickCount64();
+		printf("find [%d] took %d\n", i, (a2 - a1));
+	}
+	long int s3 = getCurrentMills();
+	printf("insert took time=%ld\n", s2 - s1);
+	printf("find all took time=%ld\n", s3 - s2);
+}
+
+// 使用 AVL 树进行查找
+int* twoSumWithAVLTree(int* nums, int numsSize, int target, int* returnSize) {
+	PTree root = NULL;
+	// 将原始数组逐一插入 AVL 树
+	for (int* p = nums; p < nums + numsSize; p++) {
+		root = push(root, *p);
+	}
+	for (int* p = nums; p < nums + numsSize; p++) {
+		int y = target - *p;
+		PTree node = find(root, y); 
+		// 没找到
+		if (node == NULL) {
+			continue;
+		} else { // 找到了
+			int value = node->value;
+			for (int i = 0; i < numsSize; i++) {
+				// 找了了并且该元素的和*p不是同一个元素
+				if (nums[i] == value && i != (p - nums)) {
+					int* r = (int*)malloc(2 * sizeof(int));
+					if (r == NULL) {
+						return NULL;
+					}
+					else {
+						r[0] = (p - nums);
+						r[1] = i;
+						*returnSize = 2;
+						return r;
+					}
+				} else {
+					continue;
+				}
+			}
+		}
+	}
+	return NULL;
+}
+```
+
+
+
 
 
 ## 解法四：利用散列表（Hash Table）实现近似O(n)的算法
@@ -220,6 +437,7 @@ PElement* initTable() {
 }
 
 // 获取元素的 hash index,对于负数取其相反数
+// 由于这里的value 都是整数，我直接用他们和 PRIME 取余后的余数作为 index
 int getPos(int value) {
 	int pos = value % PRIME;
 	if (pos < 0) {

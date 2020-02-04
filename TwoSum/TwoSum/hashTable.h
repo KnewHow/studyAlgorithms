@@ -26,6 +26,7 @@ PElement* initTable() {
 }
 
 // 获取元素的 hash index,对于负数取其相反数
+// 由于这里的value 都是整数，我直接用他们和 PRIME 取余后的余数作为 index
 int getPos(int value) {
 	int pos = value % PRIME;
 	if (pos < 0) {
