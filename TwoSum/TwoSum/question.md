@@ -190,3 +190,138 @@ int* twoSum(int* nums, int numsSize, int target, int* returnSize){
 ## 解法四：利用散列表（Hash Table）实现近似O(n)的算法
 
 既然是查找，我们可以使用散列表，这样每次查找的效率就位O(1),那么遍历查找的时间复杂度就位O(n).那我们如何构建散列表呢？对于学Java的小伙伴来说，`HashMap`就是一个天然的散列表，而对于学`C`的同学来说，可能就得去网上查查案例，自己写了，但是，既然是学算法，自己写一个又如何呢。
+
+```c
+#pragma once
+#include<stdio.h>
+#include<malloc.h>
+#include<stdlib.h>
+#define PRIME 1024
+
+typedef struct Element {
+	int value; // 值
+	int index; // 在原数组的角标
+	struct Element* next;
+} Element, *PElement;
+
+// 初始化 hashTable
+PElement* initTable() {
+	PElement* table = (PElement*)malloc(PRIME * sizeof(PElement));
+	if (table == NULL) {
+		printf("[initTable] malloc memory failure");
+		return (PElement*)NULL;
+	}
+	else {
+		for (int i = 0; i < PRIME; i++) {
+			table[i] = NULL;
+		}
+		return table;
+	}
+}
+
+// 获取元素的 hash index,对于负数取其相反数
+int getPos(int value) {
+	int pos = value % PRIME;
+	if (pos < 0) {
+		pos = pos * -1;
+	}
+	return pos;
+}
+
+// 往 hashTable 插入元素
+PElement* put(PElement *table,int value, int index) {
+	if (table == NULL) {
+		table = initTable();
+	}
+	int pos = getPos(value);
+	PElement head = table[pos];
+	if (head == NULL) {
+		head = (PElement)malloc(sizeof(Element));
+		if (head == NULL) {
+			printf("[push-malloc-head] failure\n");
+		}
+		else {
+			head->index = index;
+			head->value = value;
+			head->next = NULL;
+			table[pos] = head;
+		}
+		
+	} else {
+		PElement temp = head;
+		while (temp->next != NULL) {
+			temp = temp->next;
+		}
+		PElement node = (PElement)malloc(sizeof(Element));
+		if (node == NULL) {
+			printf("[push-malloc-node] failure\n");
+		}
+		else {
+			node->value = value;
+			node->index = index;
+			node->next = NULL;
+			temp->next = node;
+		}
+
+	}
+	return table;
+}
+
+// 查询值==value 且角标 != index 的值
+PElement query(PElement* table, int value, int index) {
+	if (table == NULL) {
+		return NULL;
+	}
+	else {
+		int pos = getPos(value);
+		PElement head = table[pos];
+		if (head == NULL) {
+			return NULL;
+		}
+		else {
+			PElement temp = head;
+			while (temp != NULL) {
+				// 找值和value 相当，但是 index 不等的元素
+				if (temp->value == value && temp->index != index) {
+					return temp;
+				}
+				else {
+					temp = temp->next;
+				}
+			}
+			return NULL;
+		}
+	}
+}
+
+int* twoSumWithHashTable(
+	int* nums, 
+	int numsSize, 
+	int target, 
+	int* returnSize
+) {
+	PElement* table = NULL;
+	for (int i = 0; i < numsSize; i++) {
+		table = put(table, nums[i], i);
+	}
+	for (int i = 0; i < numsSize; i++) {
+		int y = target - nums[i];
+		PElement e = query(table, y, i);
+		// 找到了
+		if (e != NULL) {
+			int* r = (int*)malloc(2 * sizeof(int));
+			if (r == NULL) {
+				return NULL;
+			}
+			else {
+				r[0] = i;
+				r[1] = e->index;
+				*returnSize = 2;
+				return r;
+			}
+		}
+	}
+	return NULL;
+}
+```
+

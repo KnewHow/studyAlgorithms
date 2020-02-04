@@ -2,23 +2,44 @@
 #include<stdio.h>
 #include<malloc.h>
 #include<stdlib.h>
-
 #define PRIME 1024
 
 typedef struct Element {
-	int value;
-	int index;
+	int value; // 值
+	int index; // 在原数组的角标
 	struct Element* next;
 } Element, *PElement;
 
-PElement* put(PElement *table,int value, int index) {
+// 初始化 hashTable
+PElement* initTable() {
+	PElement* table = (PElement*)malloc(PRIME * sizeof(PElement));
 	if (table == NULL) {
-		table = initTable();
+		printf("[initTable] malloc memory failure");
+		return (PElement*)NULL;
 	}
+	else {
+		for (int i = 0; i < PRIME; i++) {
+			table[i] = NULL;
+		}
+		return table;
+	}
+}
+
+// 获取元素的 hash index,对于负数取其相反数
+int getPos(int value) {
 	int pos = value % PRIME;
 	if (pos < 0) {
 		pos = pos * -1;
 	}
+	return pos;
+}
+
+// 往 hashTable 插入元素
+PElement* put(PElement *table,int value, int index) {
+	if (table == NULL) {
+		table = initTable();
+	}
+	int pos = getPos(value);
 	PElement head = table[pos];
 	if (head == NULL) {
 		head = (PElement)malloc(sizeof(Element));
@@ -52,15 +73,13 @@ PElement* put(PElement *table,int value, int index) {
 	return table;
 }
 
+// 查询值==value 且角标 != index 的值
 PElement query(PElement* table, int value, int index) {
 	if (table == NULL) {
 		return NULL;
 	}
 	else {
-		int pos = value % PRIME;
-		if (pos < 0) {
-			pos = pos * -1;
-		}
+		int pos = getPos(value);
 		PElement head = table[pos];
 		if (head == NULL) {
 			return NULL;
@@ -80,21 +99,3 @@ PElement query(PElement* table, int value, int index) {
 		}
 	}
 }
-
-
-
-PElement* initTable() {
-	PElement *table = (PElement*)malloc(PRIME * sizeof(PElement));
-	printf("[initTable]  sizeof(PElement)=%d", sizeof(PElement));
-	if (table == NULL) {
-		printf("[initTable] malloc memory failure");
-		return (PElement*)NULL;
-	}
-	else {
-		for (int i = 0; i < PRIME; i++) {
-			table[i] = NULL;
-		}
-		return table;
-	}
-}
-
