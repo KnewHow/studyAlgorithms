@@ -343,5 +343,3 @@ char* longestPalindrome(char* s) {
 }
 ```
 
-
-

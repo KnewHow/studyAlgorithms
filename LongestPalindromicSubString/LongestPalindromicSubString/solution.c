@@ -233,8 +233,6 @@ char* longestPalindromeWithManacher(char* s) {
 
 
 
-
-
 int main() {
 	char arr[] = "cbcbccde";
 	/*for (int i = 0; i < 1000; i++) {
