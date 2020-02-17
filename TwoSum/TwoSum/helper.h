@@ -30,7 +30,7 @@ int* copyArray(int* nums, int numsSize) {
 
 // ·öÖúº¯Êý-¿ìËÙÅÅÐò
 void quickSort(int* nums, int left, int right) {
-	if (right - left > 1) {
+	if (right - left > 0) {
 		int pivod = nums[left];
 		int i = left;
 		int j = right;
