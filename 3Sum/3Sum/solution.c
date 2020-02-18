@@ -164,14 +164,87 @@ int** threeSumOpt(
 	return r;
 }
 
+/**
+* 从网上搜到一个代码比较简洁且效果比较高的方法
+* 首先对原数组进行排序，如果原数组中所有数字同号，无解
+* 否则依次遍历每个元素，去当前元素作为x, 设 begin = i+1, end = size-1
+* 遍历，如果 sum = x + begin + end > 0 end--,否则 begin++
+* 如果找到等于0的，存储
+*/
+int** threeSum(
+	int* nums,
+	int numsSize,
+	int* returnSize,
+	int** returnColumnSizes
+) {
+	PHashTable hashTable = initHashTable();
+	quickSort(nums, numsSize);
+	if (numsSize < 3) { // size 小于三，无解
+		int** r = toArray(hashTable);
+		*returnSize = hashTable->size;
+		int* columns = (int*)malloc(sizeof(int) * hashTable->size);
+		for (int i = 0; i < hashTable->size; i++) {
+			*(columns + i) = 3;
+		}
+		*returnColumnSizes = columns;
+		return r;
+	} 
+	if (nums[0] <= 0 && nums[numsSize - 1] >= 0) { // 如果同号，无解
+		for (int i = 0; i < numsSize; i++) {
+			if (nums[i] > 0) { // 后面已经全是正数，无解,终止循环
+				break;
+			}
+			if (i > 0 && nums[i] == nums[i - 1]) { // 去重
+				continue;
+			}
+			else {
+				int begin = i + 1;
+				int end = numsSize - 1;
+				while (begin < end) {
+					int sum = nums[i] + nums[begin] + nums[end];
+					if (sum == 0) {
+						int* arr = toSortedArray(nums[i], nums[begin], nums[end]);
+						put(hashTable, arr, 3);
+						// 去重
+						while (begin < end && nums[begin] == nums[begin + 1]) {
+							begin++;
+						}
+						while (begin < end && nums[end] == nums[end - 1]) {
+							end--;
+						}
+						begin++;
+						end--;
+					}
+					else if (sum > 0) {
+						end--;
+					}
+					else {
+						begin++;
+					}
+				}
+			}
+		}
+	}
+	
+	int** r = toArray(hashTable);
+	*returnSize = hashTable->size;
+	int* columns = (int*)malloc(sizeof(int) * hashTable->size);
+	for (int i = 0; i < hashTable->size; i++) {
+		*(columns + i) = 3;
+	}
+	*returnColumnSizes = columns;
+	return r;
+	
+}
+
 
 
 int main() {
-	int nums[] = { 0,0 };
+	int nums[] = { 0 };
 	int size = sizeof(nums) / sizeof(int);
 	int returnSize = 0;
 	int *columSize = NULL;
-	int **r = threeSumOpt(nums, size, &returnSize, &columSize);
+	int **r = threeSum(nums, 0, &returnSize, &columSize);
 	int** p = r;
 	printf("{\n");
 	while (p < r + returnSize) {
