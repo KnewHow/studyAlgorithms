@@ -1,6 +1,6 @@
 #include<stdlib.h>
 #include<stdio.h>
-
+#include<string.h>
 /**
 * 我们定义两个指针`left`和`right`,
 * 一开始分别指向字符串的开头，如果`left!=')'`开始让`right`自增，
