@@ -1,6 +1,5 @@
 #include<stdlib.h>
 #include<stdio.h>
-#include<string.h>
 
 /**
 * 我们定义两个指针`left`和`right`,
