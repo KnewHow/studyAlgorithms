@@ -10,8 +10,8 @@
 * 考虑一下我们的二分查找的思路，我们先定义一个 pivot = (begin + end) / 2
 * 如果 nums[pivot] > nums[pivot+1],说明在 povit 点数组被分成两个数组。
 * 否则，我们需要比较 nums[pivot] > nums[begin]。如果 a[pivot] > nums[begin]
-* 说明 pivot 还在第一个有序的数组内，分界点在右半边，让 begin = pivot + 1
-* 否则说明 pivot 已经在第二个有序数组内，分界点在左半边，让 end = pivot - 1
+* 说明 pivot 还在第一个有序的数组内，分界点在右半边，让 begin = pivot
+* 否则说明 pivot 已经在第二个有序数组内，分界点在左半边，让 end = pivot
 *
 * 在此函数中，我们返回分界点的最小元素的角标
 */
