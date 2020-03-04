@@ -1,21 +1,25 @@
 #include<stdlib.h>
 #include<stdio.h>
 
-// 表示第`i`行，数字`j`出现了多少次
-int rows[9][10] = { 0 };
-// 表示第`i`列，数字`j`出现了多少次
-int cols[9][10] = { 0 };
 
-// 表示第`i`个 sub box， 数字`j`出现了多少次
-// 对于任意的 board[i][j],我们可以知道它属于 第 `i/3 *3 + j / 3` subBox
-int subBox[9][10] = { 0 };
-
-// 表示board[i][j]个 元素是否可以回溯 0-不可用 1-可以
-int tag[9][9] = { 0 };
-
-
-// 根据给定的 board,对上面的数组进行初始化
-void initArray(char** board, int boardSize, int* boardColSize) {
+/**
+* 根据给定的 board,对上面的数组进行初始化
+* @param board 原数组
+* @param boardSize boardSize
+* @param boardColSize 每行元素个数
+* @param rows 表示第`i`行，数字`j`出现了多少次
+* @param cols 表示第`i`列，数字`j`出现了多少次
+* @param subBox 表示第`i`个 sub box， 数字`j`出现了多少次
+* @param tag 表示 board[i][j]个 元素是否可以回溯 0-不可用 1-可以
+*/
+void initArray(
+	char** board, 
+	int boardSize, 
+	int* boardColSize, 
+	int rows[][10], 
+	int cols[][10],
+	int subBox[][10],
+	int tag[][9]) {
 	for (int i = 0; i < boardSize; i++) {
 		for (int j = 0; j < *(boardColSize + i); j++) {
 			char c = *(*(board + i) + j);
@@ -45,6 +49,10 @@ void initArray(char** board, int boardSize, int* boardColSize) {
 * @param m 回溯到第 m 行的指针
 * @param n 回溯到第 n 列的指针
 * @param minReCallNth 回溯到第 minReCallNth 方格的指针
+* @param rows 表示第`i`行，数字`j`出现了多少次
+* @param cols 表示第`i`列，数字`j`出现了多少次
+* @param subBox 表示第`i`个 sub box， 数字`j`出现了多少次
+* @param tag 表示 board[i][j]个 元素是否可以回溯 0-不可用 1-可以
 */
 void findK(
 	char** board, 
@@ -55,7 +63,11 @@ void findK(
 	int kInitValue,
 	int *m,
 	int *n,
-	int * minReCallNth
+	int * minReCallNth,
+	int rows[][10],
+	int cols[][10],
+	int subBox[][10],
+	int tag[][9]
 ) {
 	int isFind = 0;
 	for (int k = kInitValue; k <= 9; k++) {
@@ -95,9 +107,26 @@ void findK(
 
 
 /**
+* 根据给定的 board,对上面的数组进行初始化
+* @param board 原数组
+* @param boardSize boardSize
+* @param boardColSize 每行元素个数
 * @param nth 以行为优先遍历，从 0 开始，到 80 结束，表示计算到第 nth 个宫格
+* @param rows 表示第`i`行，数字`j`出现了多少次
+* @param cols 表示第`i`列，数字`j`出现了多少次
+* @param subBox 表示第`i`个 sub box， 数字`j`出现了多少次
+* @param tag 表示 board[i][j]个 元素是否可以回溯 0-不可用 1-可以
 */
-void solve(char** board, int boardSize, int* boardColSize, int nth) {
+void solve(
+	char** board, 
+	int boardSize, 
+	int* boardColSize, 
+	int nth,
+	int rows[][10],
+	int cols[][10],
+	int subBox[][10],
+	int tag[][9]
+) {
 	long long int callCounter = 0;
 	while (nth <= 80) {
 		callCounter++;
@@ -110,7 +139,7 @@ void solve(char** board, int boardSize, int* boardColSize, int nth) {
 		int n = -1;
 		int minReCallNth = INT_MAX;
 		if (c == '.') {
-			findK(board, nth, i, j, subBoxIndex, 1, &m, &n, &minReCallNth);
+			findK(board, nth, i, j, subBoxIndex, 1, &m, &n, &minReCallNth, rows, cols, subBox, tag);
 			// 如果找到数字，继续，否则回溯
 			if (m == -1 && n == -1) {
 				nth++;
@@ -142,7 +171,7 @@ void solve(char** board, int boardSize, int* boardColSize, int nth) {
 					}
 				}
 				else {
-					findK(board, nth, i, j, subBoxIndex, k + 1, &m, &n, &minReCallNth);
+					findK(board, nth, i, j, subBoxIndex, k + 1, &m, &n, &minReCallNth, rows, cols, subBox, tag);
 					// 如果找到数字，继续，否则回溯
 					if (m == -1 && n == -1) {
 						nth++;
@@ -157,10 +186,22 @@ void solve(char** board, int boardSize, int* boardColSize, int nth) {
 }
 
 void solveSudoku(char** board, int boardSize, int* boardColSize) {
-	initArray(board, boardSize, boardColSize);
-	solve(board, boardSize, boardColSize, 0);
+	// 表示第`i`行，数字`j`出现了多少次
+	int rows[9][10] = { 0 };
+	// 表示第`i`列，数字`j`出现了多少次
+	int cols[9][10] = { 0 };
+
+	// 表示第`i`个 sub box， 数字`j`出现了多少次
+	// 对于任意的 board[i][j],我们可以知道它属于 第 `i/3 *3 + j / 3` subBox
+	int subBox[9][10] = { 0 };
+
+	// 表示board[i][j]个 元素是否可以回溯 0-不可用 1-可以
+	int tag[9][9] = { 0 };
+	initArray(board, boardSize, boardColSize, rows, cols,subBox, tag);
+	solve(board, boardSize, boardColSize, 0, rows, cols, subBox, tag);
 }
 
+// 打印数独
 void printBoard(char** board, int boardSize, int* boardColSize) {
 	for (int i = 0; i < boardSize; i++) {
 		char* s = *(board + i);
@@ -171,6 +212,7 @@ void printBoard(char** board, int boardSize, int* boardColSize) {
 	}
 }
 
+// 将栈上的 board,改为堆分配，后期便于将 . 修改为具体的数字
 char** initBoard(char b[][9]) {
 	char** board = (char**)malloc(sizeof(char*) * 9);
 	for (int i = 0; i < 9; i++) {
