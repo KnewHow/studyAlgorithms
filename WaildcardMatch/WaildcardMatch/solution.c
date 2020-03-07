@@ -38,9 +38,9 @@ int match(
 	char* p,
 	int n,
 	int m,
-	int sIndex, 
-	int pIndex, 
-	int **res) {
+	int sIndex,
+	int pIndex,
+	int** res) {
 	// 如果已经计算过，直接返回
 	if (*(*(res + sIndex) + pIndex) != -1) {
 		return *(*(res + sIndex) + pIndex);
@@ -77,7 +77,7 @@ int match(
 		*(*(res + sIndex) + pIndex) = r;
 		return r;
 	}
-	
+
 
 }
 
