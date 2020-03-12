@@ -244,7 +244,7 @@ char* longestPalindrome(char* s) {
 
 ## 使用 Manacher 算法
 
-网上关于 Manacher 算法的博客有很多，但是讲的都比较模糊，我也是看着这篇博客才明白的：[leetCode-5-Longest-Palindromic-Substring](https://leetcode.wang/leetCode-4-Median-of-Two-Sorted-Arrays.html)。代码很是短小精悍，不过还是建议大家拿出纸、笔画图演示一下，这样就会很容易理解，下面直接贴代码了：
+网上关于 Manacher 算法的博客有很多，但是讲的都比较模糊，我也是看着这篇博客才明白的：[leetCode-5-Longest-Palindromic-Substring](https://leetcode.wang/leetCode-5-Longest-Palindromic-Substring.html)。代码很是短小精悍，不过还是建议大家拿出纸、笔画图演示一下，这样就会很容易理解，下面直接贴代码了：
 
 ```c
 int getSize(char* s) {
