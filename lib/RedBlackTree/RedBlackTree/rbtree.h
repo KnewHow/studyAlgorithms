@@ -20,8 +20,13 @@ typedef struct RBTreeNode {
 typedef struct RBTree {
 	PRBTreeNode root; // 根节点
 	PRBTreeNode nil; // 哨兵节点 nil,表示所有空的子节点
-	int height; // 树高
 }RBTree, *PRBTree;
+
+// 存放红黑树节点的链表
+typedef struct RBTreeNodeList {
+	PRBTreeNode node;
+	struct RBTreeNodeList *next;
+}RBTreeNodeList, *PRBTreeNodeList;
 
 // 初始化一棵红黑树，根节点为 NULL
 PRBTree newRBTree() {
@@ -35,7 +40,6 @@ PRBTree newRBTree() {
 	nil->right = nil;
 	tree->root = nil;
 	tree->nil = nil;
-	tree->height = 0;
 	return tree;
 }
 
@@ -52,13 +56,13 @@ PRBTreeNode newRBTreeNode(int key, PRBTreeNode nil) {
 /**
 * 红黑树的高度
 */
-int getHeight(PRBTree tree, PRBTreeNode root) {
+int getRBTreeHeight(PRBTree tree, PRBTreeNode root) {
 	if (root == tree->nil) {
 		return 0;
 	}
 	else {
-		int lh = getHeight(tree, root->left);
-		int rh = getHeight(tree, root->right);
+		int lh = getRBTreeHeight(tree, root->left);
+		int rh = getRBTreeHeight(tree, root->right);
 		return max(lh, rh) + 1;
 	}
 }
@@ -149,18 +153,26 @@ void RBInsertFixup(PRBTree tree, PRBTreeNode z) {
 				y->color = BLACK;
 				z->parent->parent->color = RED;
 				z = z->parent->parent;
+				continue;
 			}
-			else if (z == z->parent->right) {
-				z = z->parent;
-				leftRotate(tree, z);
+			else {
+				if (z == z->parent->right) {
+					z = z->parent;
+					leftRotate(tree, z);
+					continue;
+				}
+				else {
+					if (z->parent != tree->nil) {
+						z->parent->color = BLACK;
+					}
+					if (z->parent->parent != tree->nil) {
+						z->parent->parent->color = RED;
+						rightRotate(tree, z->parent->parent);
+					}
+				}
 			}
-			if (z->parent != tree->nil) {
-				z->parent->color = BLACK;
-			}
-			if (z->parent->parent != tree->nil) {
-				z->parent->parent->color = RED;
-				rightRotate(tree, z->parent->parent);
-			}
+			
+			
 		}
 		else {
 			PRBTreeNode y = z->parent->parent->left;
@@ -169,19 +181,24 @@ void RBInsertFixup(PRBTree tree, PRBTreeNode z) {
 				y->color = BLACK;
 				z->parent->parent->color = RED;
 				z = z->parent->parent;
+				continue;
 			}
-			else if (z == z->parent->left) {
-				z = z->parent;
-				rightRotate(tree, z);
+			else {
+				if (z == z->parent->left) {
+					z = z->parent;
+					rightRotate(tree, z);
+					continue;
+				}
+				else {
+					if (z->parent != tree->nil) {
+						z->parent->color = BLACK;
+					}
+					if (z->parent->parent != tree->nil) {
+						z->parent->parent->color = RED;
+						leftRotate(tree, z->parent->parent);
+					}
+				}
 			}
-			if (z->parent != tree->nil) {
-				z->parent->color = BLACK;
-			}
-			if (z->parent->parent != tree->nil) {
-				z->parent->parent->color = RED;
-				leftRotate(tree, z->parent->parent);
-			}
-			
 		}
 	}
 	tree->root->color = BLACK;
@@ -214,31 +231,35 @@ void RBInsert(PRBTree tree, PRBTreeNode z) {
 	z->color = RED;
 	RBInsertFixup(tree, z);
 	// 重新计算树高
-	tree->height = getHeight(tree, tree->root);
 }
 
 /**
 * 对节点 x 进行删除修复
 */
 void RBRemoveFixup(PRBTree tree, PRBTreeNode x) {
-	while (x != tree->root && x->color == BLACK && x != tree->nil) {
+	while (x != tree->nil && x != tree->root && x->color == BLACK) {
 		if (x == x->parent->left) {
 			PRBTreeNode w = x->parent->right;
-			if (w->color == RED) {
+			if (w->color == RED && w != tree->nil) {
 				w->color = BLACK;
 				x->parent->color = RED;
 				leftRotate(tree, x->parent);
 				w = x->parent->right;
 			}
-			else if (w->left->color == BLACK && w->right->color == BLACK) {
-				w->color = RED;
+			if (w == tree->nil
+				|| (w!= tree->nil && (w->left == tree->nil || w->left->color == BLACK) 
+					&& (w->right == tree->nil || w->right->color == BLACK))) {
+				if (w != tree->nil) {
+					w->color = RED;
+				}
 				x = x->parent;
+				continue;
 			}
-			else if (w->right->color = BLACK) {
+			else if (w->right == tree->nil || w->right->color == BLACK) {
 				w->left->color = BLACK;
 				w->color = RED;
 				rightRotate(tree, w);
-				w = w->parent->right;
+				w = x->parent->right;
 			}
 			w->color = x->parent->color;
 			x->parent->color = BLACK;
@@ -248,21 +269,26 @@ void RBRemoveFixup(PRBTree tree, PRBTreeNode x) {
 		}
 		else {
 			PRBTreeNode w = x->parent->left;
-			if (w->color == RED) {
+			if (w!= tree->nil && w->color == RED) {
 				w->color = BLACK;
 				x->parent->color = RED;
 				rightRotate(tree, x->parent);
 				w = x->parent->left;
 			}
-			else if (w->left->color == BLACK && w->right->color == BLACK) {
-				w->color = RED;
+			if (w == tree->nil
+				|| (w != tree->nil && (w->left == tree->nil || w->left->color == BLACK)
+					&& (w->right == tree->nil || w->right->color == BLACK))) {
+				if (w != tree->nil) {
+					w->color = RED;
+				}
 				x = x->parent;
+				continue;
 			}
-			else if (w->right->color == BLACK) {
-				w->left->color = BLACK;
+			else if (w->left == tree->nil || w->left->color == BLACK) {
+				w->right->color = BLACK;
 				w->color = RED;
 				leftRotate(tree, w);
-				w = w->parent->left;
+				w = x->parent->left;
 			}
 			w->color = x->parent->color;
 			x->parent->color = BLACK;
@@ -322,7 +348,38 @@ void RBRemove(PRBTree tree, PRBTreeNode z) {
 		RBRemoveFixup(tree, x);
 	}
 	free(z);
-	tree->height = getHeight(tree, tree->root);
+}
+
+void destoryRBTree(PRBTree tree, PRBTreeNode root) {
+	if (root != tree->nil) {
+		if (root->left == tree->nil && root->right == tree->nil) { // 叶子节点， free
+			if (root == root->parent->left) {
+				root->parent->left = tree->nil;
+			}
+			else {
+				root->parent->right = tree->nil;
+			}
+			free(root);
+		}
+		else { // 不是叶子节点
+			destoryRBTree(tree, root->left);
+			destoryRBTree(tree, root->right);
+			if (root->parent == tree->nil) { // root 为根节点
+				free(root);
+				free(tree->nil);
+				free(tree);
+			}
+			else { // root 不是根节点，free root，然后将节点指向 root 的子树置为 nil
+				if (root == root->parent->left) {
+					root->parent->left = tree->nil;
+				}
+				else {
+					root->parent->right = tree->nil;
+				}
+				free(root);
+			}
+		}
+	}
 }
 
 /**
@@ -379,7 +436,7 @@ void printLevel(PRBTree tree, PRBTreeNode root, int currentLevel, int level, int
 * 层序遍历，更直观的看出树的形状
 */
 void levelTraverse(PRBTree tree) {
-	int height = tree->height;
+	int height = getRBTreeHeight(tree, tree->root);
 	int d = 2;
 	for (int i = 0; i < height; i++) {
 		int step = pow(2, height - 1 - i) * 2;
@@ -446,34 +503,129 @@ int validRule4(PRBTree tree, PRBTreeNode root) {
 	}
 }
 
+
+/**
+* 计算红黑树所有的叶子节点，将其保存在 list 中
+*/
+void getAllLeafNodesR(PRBTree tree, PRBTreeNode root, PRBTreeNodeList *list) {
+	
+	if (root != tree->nil) {
+		// 根节点不为空，且左右子树都为空时，为叶节点
+		if (root->left == tree->nil && root->right == tree->nil) {
+			if (*list == NULL) {
+				*list = (PRBTreeNodeList)malloc(sizeof(RBTreeNodeList));
+				(*list)->node = root;
+				(*list)->next = NULL;
+			}
+			else {
+				PRBTreeNodeList newNode = (PRBTreeNodeList)malloc(sizeof(RBTreeNodeList));
+				newNode->node = root;
+				newNode->next = *list;
+				*list = newNode;
+			}
+		}
+		else {
+			getAllLeafNodesR(tree, root->left, list);
+			getAllLeafNodesR(tree, root->right, list);
+		}
+	}
+}
+
+/**
+* 获取红黑树所有的叶子节点，使用链表的形式返回
+*/
+PRBTreeNodeList getAllLeafNodes(PRBTree tree, PRBTreeNode root) {
+	PRBTreeNodeList list = NULL;
+	getAllLeafNodesR(tree, root, &list);
+	return list;
+}
+
+/**
+* 从节点 root 到达 节点 target 需要经历的黑色节点数
+* 如果从节点 root 无法通过左子树或右子树到达 target, 返回 -1，表示不可达
+*/
+int clcReachLeavesBlackNodes(PRBTree tree, PRBTreeNode root, PRBTreeNode target, int blackNodes) {
+	if (root != tree->nil) {
+		int currentBlackNodes = 0;
+		if (root->color == BLACK) {
+			currentBlackNodes = 1;
+		}
+		if (target->key < root->key) {
+			return clcReachLeavesBlackNodes(tree, root->left, target, blackNodes + currentBlackNodes);
+		}
+		else if (target->key > root->key) {
+			return clcReachLeavesBlackNodes(tree, root->right, target, blackNodes + currentBlackNodes);
+		}
+		else { // 找到了
+			return  blackNodes + currentBlackNodes;
+		}
+	}
+	else { // 没找到
+		return -1;
+	}
+}
+
+/**
+* 校验根节点到所有叶子节点经过的黑色节点数，比较是否相等，如果都相等，返回1，否则返回0
+* 对于不可达的节点，使用 -1 表示，不需要校验
+*/
+int validRootReachEachLeaves(PRBTree tree, PRBTreeNode root, PRBTreeNodeList leaves, int leavesSize) {
+	int* res = (int*)malloc(sizeof(int) * leavesSize);
+	PRBTreeNodeList p = leaves;
+	int previous = -1;
+	while (p != NULL) {
+		int blackNodes = clcReachLeavesBlackNodes(tree, root, p->node, 0);
+		if (blackNodes != -1) {
+			if (previous == -1) { // 第一次遇到可达的叶子节点
+				previous = blackNodes;
+			}
+			else {
+				if (blackNodes != previous) {
+					printf("root key:%d reach leaf key:%d is not equal previous\n", root->key, p->node->key);
+					return 0;
+				}
+			}
+		}
+		p = p->next;
+	}
+	return 1;
+}
+
+/**
+* 计算红黑树所有的非叶子节点到所有叶子节点的简单路径的黑色根节点数量
+*/
+void validRule5R(PRBTree tree, PRBTreeNode root, PRBTreeNodeList leaves, int leavesSize, int* returnR5) {
+	if (root != tree->nil) {
+		int r = validRootReachEachLeaves(tree, root, leaves, leavesSize);
+		if (r == 0) {
+			*returnR5 = 0;
+		}
+		validRule5R(tree, root->left, leaves, leavesSize,returnR5);
+		validRule5R(tree, root->right, leaves, leavesSize, returnR5);
+	}
+}
+
 /**
 * 校验规则 5：对每个节点，到其所有后代的叶节点的简单路径上，均包含相同数目的黑色节点
 * @return 该节点到左右子树的黑色节点数
 */
-int validRule5(PRBTree tree, PRBTreeNode root, int *returnR5) {
-	if (root != tree->nil) {
-		int lb = validRule5(tree, root->left, returnR5);
-		int rb = validRule5(tree, root->right, returnR5);
-		// 校验失败
-		if (lb != rb) {
-			printf("root node key: %d left blacks: %d, and rigth black :%d not equal\n", root->key, lb, rb);
-			*returnR5 = 0;
-			// 这个返回已经其实已经无所谓了
-			return lb;
-		}
-		else {
-			if (root->color == BLACK) { // 如果该节点本身是黑色节点 +1，否则只返回子树的黑色节点数
-				return 1 + lb;
-			}
-			else {
-				return lb;
-			}
-		}
-		
+int validRule5(PRBTree tree, PRBTreeNode root) {
+	PRBTreeNodeList leaves = getAllLeafNodes(tree, root);
+	PRBTreeNodeList p = leaves;
+	int leavesSize = 0;
+	while (p != NULL) {
+		leavesSize++;
+		p = p->next;
 	}
-	else { // nil 算一个黑节点
-		return 1;
+	int returnR5 = 1;
+	validRule5R(tree, root, leaves, leavesSize, &returnR5);
+	p = leaves;
+	while (p != NULL) {
+		PRBTreeNodeList q = p;
+		p = p->next;
+		free(q);
 	}
+	return returnR5;
 }
 
 /**
@@ -495,8 +647,7 @@ int valid(PRBTree tree) {
 		r2 = 0;
 	}
 	int r4 = validRule4(tree, tree->root);
-	int r5 = 1;
-	// validRule5(tree, tree->root, &r5);
+	int r5 = validRule5(tree, tree->root);
 	return r13 && r2 && r4 & r5;;
 }
 

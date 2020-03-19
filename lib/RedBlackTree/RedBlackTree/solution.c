@@ -11,28 +11,45 @@ int* genArray(int size) {
 }
 
 void RBTreeTest() {
-	int size = 10;
+	int size = 10000;
 	int* arr = genArray(size);
 	PRBTree tree = newRBTree();
-	printf("test insert==============\n\n");
+	printf("============== test insert %d nodes in rb tree ==============\n\n", size);
 	for (int i = 0; i < size; i++) {
 		int key = *(arr + i);
 		PRBTreeNode node = newRBTreeNode(key, tree->nil);
 		RBInsert(tree, node);
-	}
-	int r1 = valid(tree);
-	printf("valid result:%d\n", r1);
-	printf("tree height is: %d\n", getHeight(tree, tree->root));
-	levelTraverse(tree);
-	printf("test delete tree ==============\n\n");
-	for (int i = 0; i < size; i++) {
-		int key = *(arr + i);
-		PRBTreeNode node = RBGetByKey(tree, tree->root, key);
-		//RBRemove(tree, node);
-		// int r = valid(tree);
-		//printf("delete key: %d, valid r is: %d,height is: %d, \n\n", key, r, tree->height);
+		printf("insert key: %d", key);
+		/*int r1 = valid(tree);
+		if (r1 == 0) {
+			printf("valid failure");
+			return;
+		}*/
+		printf("\n");
+	
 		// levelTraverse(tree);
 	}
+	//levelTraverse(tree);
+	 int r = valid(tree);
+	 printf("valid result:%d\n", r);
+	 printf("\n\ntree height is: %d\n", getRBTreeHeight(tree, tree->root));
+	//printf("============== test delete %d nodes in rb tree ==============\n\n", size);
+	//for (int i = 0; i < size; i++) {
+	//	int key = *(arr + i);
+	//	PRBTreeNode node = RBGetByKey(tree, tree->root, key);
+	//	RBRemove(tree, node);
+	//	printf("delete key: %d", key);
+	//	//levelTraverse(tree);
+	//	/*int r1 = valid(tree);
+	//	if (r1 == 0) {
+	//		printf("valid failure");
+	//		return;
+	//	}*/
+	//	printf("\n");
+	//}
+	printf("============== destory RB tree ==============\n\n");
+	destoryRBTree(tree, tree->root);
+	printf("============== test complete ==============\n\n");
 	
 	
 }
