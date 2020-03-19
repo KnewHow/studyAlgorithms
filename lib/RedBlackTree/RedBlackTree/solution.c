@@ -19,19 +19,19 @@ void RBTreeTest() {
 		int key = *(arr + i);
 		PRBTreeNode node = newRBTreeNode(key, tree->nil);
 		RBInsert(tree, node);
-		printf("insert key: %d", key);
+		//printf("insert key: %d", key);
 		/*int r1 = valid(tree);
 		if (r1 == 0) {
 			printf("valid failure");
 			return;
 		}*/
-		printf("\n");
+		//printf("\n");
 	
 		// levelTraverse(tree);
 	}
 	//levelTraverse(tree);
-	 int r = valid(tree);
-	 printf("valid result:%d\n", r);
+	 // int r = valid(tree);
+	 // printf("valid result:%d\n", r);
 	 printf("\n\ntree height is: %d\n", getRBTreeHeight(tree, tree->root));
 	//printf("============== test delete %d nodes in rb tree ==============\n\n", size);
 	//for (int i = 0; i < size; i++) {
@@ -48,7 +48,7 @@ void RBTreeTest() {
 	//	printf("\n");
 	//}
 	printf("============== destory RB tree ==============\n\n");
-	destoryRBTree(tree, tree->root);
+	destoryRBTree(tree);
 	printf("============== test complete ==============\n\n");
 	
 	

@@ -350,36 +350,12 @@ void RBRemove(PRBTree tree, PRBTreeNode z) {
 	free(z);
 }
 
-void destoryRBTree(PRBTree tree, PRBTreeNode root) {
-	if (root != tree->nil) {
-		if (root->left == tree->nil && root->right == tree->nil) { // 叶子节点， free
-			if (root == root->parent->left) {
-				root->parent->left = tree->nil;
-			}
-			else {
-				root->parent->right = tree->nil;
-			}
-			free(root);
-		}
-		else { // 不是叶子节点
-			destoryRBTree(tree, root->left);
-			destoryRBTree(tree, root->right);
-			if (root->parent == tree->nil) { // root 为根节点
-				free(root);
-				free(tree->nil);
-				free(tree);
-			}
-			else { // root 不是根节点，free root，然后将节点指向 root 的子树置为 nil
-				if (root == root->parent->left) {
-					root->parent->left = tree->nil;
-				}
-				else {
-					root->parent->right = tree->nil;
-				}
-				free(root);
-			}
-		}
+void destoryRBTree(PRBTree tree) {
+	while (tree->root != tree->nil) {
+		RBRemove(tree, tree->root);
 	}
+	free(tree->nil);
+	free(tree);
 }
 
 /**
