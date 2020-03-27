@@ -1,4 +1,5 @@
 #pragma once
+#pragma once
 #include<stdlib.h>
 #include<stdio.h>
 #include<malloc.h>
@@ -35,7 +36,10 @@ PRBTree newRBTree() {
 	PRBTree tree = (PRBTree)malloc(sizeof(RBTree));
 	PRBTreeNode nil = (PRBTreeNode)malloc(sizeof(RBTreeNode));
 	// nil 的颜色为黑色，其余都无所谓
-	nil->key = NULL;
+	char* key = (char*)malloc(sizeof(char) * 1);
+	*key = '\0';
+	nil->key = key;
+	nil->value = key;
 	nil->color = BLACK;
 	nil->parent = nil;
 	nil->left = nil;
@@ -84,11 +88,11 @@ PRBTreeNode RBMin(PRBTree tree, PRBTreeNode root) {
 	}
 }
 
-PRBTreeNode RBGetByKey(PRBTree tree, PRBTreeNode root, char *key) {
+PRBTreeNode RBGetByKey(PRBTree tree, PRBTreeNode root, char* key) {
 	if (root == tree->nil) {
 		return tree->nil; // not found
 	}
-	else if (strcmp(root->key,key) == 0) {
+	else if (strcmp(root->key, key) == 0) {
 		return root;
 	}
 	else if (strcmp(root->key, key) < 0) {
@@ -223,7 +227,7 @@ void RBInsert(PRBTree tree, PRBTreeNode z) {
 	if (y == tree->nil) {
 		tree->root = z;
 	}
-	else if (strcmp(z->key, x->key) < 0) {
+	else if (strcmp(z->key, y->key) < 0) {
 		y->left = z;
 	}
 	else {
@@ -233,7 +237,6 @@ void RBInsert(PRBTree tree, PRBTreeNode z) {
 	z->right = tree->nil;
 	z->color = RED;
 	RBInsertFixup(tree, z);
-	// 重新计算树高
 }
 
 /**
@@ -529,7 +532,7 @@ int clcReachLeavesBlackNodes(PRBTree tree, PRBTreeNode root, PRBTreeNode target,
 		if (root->color == BLACK) {
 			currentBlackNodes = 1;
 		}
-		if (strcmp(target->key, root->key) <0) {
+		if (strcmp(target->key, root->key) < 0) {
 			return clcReachLeavesBlackNodes(tree, root->left, target, blackNodes + currentBlackNodes);
 		}
 		else if (strcmp(target->key, root->key) > 0) {

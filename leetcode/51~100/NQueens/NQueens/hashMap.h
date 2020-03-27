@@ -1,4 +1,5 @@
 #pragma once
+#pragma once
 #include<stdio.h>
 #include<stdlib.h>
 #include<malloc.h>
@@ -14,12 +15,12 @@ typedef struct HashTable {
 	PLinkList list;
 	PRBTree tree;
 	int size;
-} HashTable, *PHashTable;
+} HashTable, * PHashTable;
 
 typedef struct HashMap {
 	int size;
 	PHashTable* tables;
-}HashMap, *PHashMap;
+}HashMap, * PHashMap;
 
 PHashTable newHashTable() {
 	PHashTable hashTable = (PHashTable)malloc(sizeof(HashTable));
@@ -41,10 +42,10 @@ PHashMap newHashMap() {
 	return hashMap;
 }
 
-int hashCode(char *key) {
+int hashCode(char* key) {
 	int sum = 0;
 	while (*key != '\0') {
-		sum += *key;
+		sum = sum * 2 + *key - 48;
 		key++;
 	}
 	return sum;
@@ -65,8 +66,9 @@ void linkListToRBTree(PHashTable table) {
 }
 
 
-void hashTablePut(PHashMap map, char *key, char *value) {
-	int pos = hashCode(key) % N;
+void hashTablePut(PHashMap map, char* key, char* value) {
+	int code = hashCode(key);
+	int pos = code % N;
 	PHashTable table = *(map->tables + pos);
 	if (table == NULL) {
 		PHashTable table = newHashTable();
@@ -98,7 +100,7 @@ void hashTablePut(PHashMap map, char *key, char *value) {
 	}
 }
 
-char* hashTableGetOrElse(PHashMap map, char *key, char* defaultV) {
+char* hashTableGetOrElse(PHashMap map, char* key, char* defaultV) {
 	int pos = hashCode(key) % N;
 	PHashTable table = *(map->tables + pos);
 	if (table->way == LINK_LIST_WAY) {
@@ -122,31 +124,37 @@ char* hashTableGetOrElse(PHashMap map, char *key, char* defaultV) {
 	}
 }
 
-int hashTableContains(PHashMap map, char *key) {
+int hashTableContains(PHashMap map, char* key) {
 	int pos = hashCode(key) % N;
 	PHashTable table = *(map->tables + pos);
-	if (table->way == LINK_LIST_WAY) {
-		PLinkListNode node = linkListGet(table->list, key);
-		if (node != table->list->nil) {
-			return 1;
-		}
-		else {
-			return 0;
-		}
-
+	if (table == NULL) {
+		return 0;
 	}
 	else {
-		PRBTreeNode node = RBGetByKey(table->tree, table->tree->root, key);
-		if (node != table->tree->nil) {
-			return 1;
+		if (table->way == LINK_LIST_WAY) {
+			PLinkListNode node = linkListGet(table->list, key);
+			if (node != table->list->nil) {
+				return 1;
+			}
+			else {
+				return 0;
+			}
+
 		}
 		else {
-			return 0;
+			PRBTreeNode node = RBGetByKey(table->tree, table->tree->root, key);
+			if (node != table->tree->nil) {
+				return 1;
+			}
+			else {
+				return 0;
+			}
 		}
 	}
+	
 }
 
-void hashTableRemove(PHashMap map, char *key) {
+void hashTableRemove(PHashMap map, char* key) {
 	int pos = hashCode(key) % N;
 	PHashTable table = *(map->tables + pos);
 	if (table->way == LINK_LIST_WAY) {
