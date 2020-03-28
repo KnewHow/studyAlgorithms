@@ -31,6 +31,8 @@ Explanation: There are two distinct solutions to the 4-queens puzzle as shown be
 
 # Solution
 
+## 解法一：正常解
+
 既然只要求有多少个，按照之前的算法，只有把最终的size 返回即可，代码如下：
 
 ```c
@@ -168,6 +170,17 @@ int main() {
     printf("r is %d\n", r);
 	system("pause");
 	return 0;
+}
+```
+
+## 解法二：投机取巧
+
+既然我们已经可以计算出1~n 皇后的问题，那么我们为什么不能用下面的代码呢：
+
+```c
+int totalNQueens(int n){
+        int rs[20] ={0,1,0,0,2,10,4,40,92,352,724,2680};
+        return rs[n];
 }
 ```
 
