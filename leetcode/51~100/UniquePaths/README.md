@@ -44,6 +44,8 @@ It's guaranteed that the answer will be less than or equal to 2 * 10 ^ 9.
 
 # Solution
 
+## 解法一：回溯法
+
 我们可以使用回溯法来解，定义一个`m x n` 的矩阵，然后建立一个辅助栈，每次走一步，把上次的位置信息和方向信息压入栈中，如果走到终点，进行回溯。我们以向右行走为优先，如果回溯到一个点，如果发现它上次是向右走的，可以再次尝试往下走(当然不是所有的点都是可以往两个方向走，对于某些只可以往一个方向走的格子，直接回溯)；如果发现他上次是往下走的，该点无法在回溯，继续回溯上一个点，直到回溯到(0,0)也无法回溯了。
 
 代码如下：
@@ -176,3 +178,78 @@ public:
 ```
 
 按照这个方法是可以的，但是当m、n很大时，就超时了。
+
+## 解法二：纯递归
+
+从起点(0,0)出发，下一步只能往右走(x, y+1) 或者往下走(x+1， y),一直到(m,m)这点，可以以为如下的递归解法：
+
+```c++
+#include<vector>
+using namespace std;
+
+class Solution {
+public:
+	int uniquePaths(int m, int n) {
+		if (m == 0 || n == 0) {
+			return 0;
+		}
+		else if (m == 1 && n == 1) {
+			return 1;
+		}
+		else if (m == 2 && n == 2) {
+			return 2;
+		}
+		else if ((m == 3 && n == 2)||(m == 2 && n == 3)) {
+			return 3;
+		}
+		else {
+			int paths = 0;
+			paths += uniquePaths(m, n - 1);
+			paths += uniquePaths(m - 1, n);
+			return paths;
+		}
+
+	}
+};
+```
+
+上面的方法会造成重复计算，运行测试用例会超时，因此可以使用动态规划来优化。
+
+## 解法三：动态规划
+
+用一个dp数组来优化，代码如下：
+
+```c++
+#include<vector>
+using namespace std;
+static int dp[101][101] = { 0 };
+class Solution {
+public:
+	int uniquePaths(int m, int n) {
+		if (m <= 0 || n <= 0) {
+			return 0;
+		}
+		else if (m == 1 && n == 1) {
+			return 1;
+		}
+		else if (m == 2 && n == 2) {
+			return 2;
+		}
+		else if ((m == 3 && n == 2)||(m == 2 && n == 3)) {
+			return 3;
+		}
+		else if (dp[m][n] > 0) {
+			return dp[m][n];
+		}
+		else {
+			dp[m][n-1] = uniquePaths(m, n - 1);
+			dp[m-1][n] = uniquePaths(m - 1, n);
+			dp[m][n] = dp[m - 1][n] + dp[m][n - 1];
+			return dp[m][n];
+		}
+
+	}
+};
+```
+
+执行速度简直不要不要的。

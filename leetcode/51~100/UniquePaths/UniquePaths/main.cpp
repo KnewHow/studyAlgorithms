@@ -3,8 +3,8 @@
 using namespace std;
 
 int main() {
-	int m = 12;
-	int n = 12;
+	int m = 19;
+	int n = 13;
 	Solution s = Solution();
 	int total = s.uniquePaths(m, n);
 	cout << "total is:" << total << endl;
