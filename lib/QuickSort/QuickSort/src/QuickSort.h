@@ -5,7 +5,7 @@
 namespace QuickSort {
 	
 	template<typename T>
-	void quickSortR(std::vector<T>& v, int begin, int end, bool compare(T a, T b)) {
+	void quickSortR(std::vector<T>& v, int begin, int end, bool compare(const T& a, const T& b)) {
 		if (end - begin > 0) {
 			int left = begin;
 			int right = end;
@@ -31,19 +31,22 @@ namespace QuickSort {
 	}
 	
 	template <typename T>
-	void sort(std::vector<T>& v, bool compare(T a, T b)) {
+	void sort(std::vector<T>& v, bool compare(const T& a, const T& b)) {
 		quickSortR(v, 0, v.size() - 1, compare);
 	}
 	
 	
-	template <typename T> void print(const std::vector<T>& v) {
-		std::cout << "[";
-		for (int i = 0; i < v.size(); i++) {
+	template <typename T> 
+	void print(const std::vector<T>& v) {
+		typedef typename std::vector<T>::size_type size_type;
+		std::cout << "[" << std::endl;
+		for (size_type i = 0; i < v.size(); i++) {
 			std::cout << v[i];
 			if (i < v.size() - 1) {
-				std::cout << ", ";
+				std::cout << " ";
 			}
 		}
-		std::cout << "]";
+		
+		std::cout << std::endl << "]";
 	}
 };
