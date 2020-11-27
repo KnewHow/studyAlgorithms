@@ -7,7 +7,7 @@ int main() {
 	std::string s = "ADOBECODEBANC";
 	std::string t = "ABC";
 	Solution so;
-	std::string r = so.minWindow(s, t);
+	std::string r = so.minWindow3(s, t);
 	std::cout << "result: " << r << std::endl;
 	//
 	const std::unordered_map<char, int> map = {
