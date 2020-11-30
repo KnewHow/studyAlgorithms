@@ -10,11 +10,9 @@ public:
     * @param nums 1~n的数字集合，随之程序执行，顺序会被打乱
     * @param res 最终返回的结果
     * @param k k个元素的组合
-    * @param nth 当前组合到第 nth 个元素
+    * @param previousIndex 上一个元素取的角标
+    * @param nth 当前组合到第 kth 个元素
+    * @param tmp 之前已经保存的结果，这里使用引用会减少多次复制
     */
-    void doCombine(std::vector<int>& nums, std::vector<std::vector<int>>& res, int k, int nth);
-    /**
-    * 根据角标交换集合中元素
-    */
-    void swap(std::vector<int>& v, int i, int j);
+    void doCombine(std::vector<int>& nums, std::vector<std::vector<int>>& res, int k, int previousIndex, int kth, std::vector<int>& tmp);
 };

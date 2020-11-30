@@ -1,5 +1,6 @@
 #include<iostream>
 #include<vector>
+#include "Weapon.h";
 #include "Solution.h"
 
 void printRes(const std::vector<std::vector<int>>& res) {

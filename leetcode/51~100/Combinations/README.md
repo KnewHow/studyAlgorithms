@@ -36,4 +36,4 @@ Constraints:
 
 # Solution
 
-使用之前[全排列的算法](https://leetcode-cn.com/problems/permutations/)，只是将全排序的长度替换为`k`即可.
+我们按照较小元素在前，较大元素在后的顺序，对于n个元素的k个排列，我们第一个元素可以取：`1~n-k+1`任意一个，如果第一个元素取`kth, 1<=kth<n-k+1`,那么第二个元素可以随机的取`n-k~n`任意一个元素，为此，我们可以递归的执行。
