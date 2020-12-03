@@ -27,4 +27,4 @@ Constraints:
 
 # Solution
 
-有了之前![77题的基础]()，这题就很简单了，取集合中0~n个元素的排列即可。
+有了之前[77题的基础](https://leetcode-cn.com/problems/combinations/)，这题就很简单了，取集合中0~n个元素的排列即可。
