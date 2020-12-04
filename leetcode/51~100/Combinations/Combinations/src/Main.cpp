@@ -20,7 +20,7 @@ int main() {
 	int n = 4;
 	int k = 2;
 	Solution s;
-	auto res = s.combine(n, k);
+	auto res = s.combine2(n, k);
 	printRes(res);
 	std::cin.get();
 	return 0;

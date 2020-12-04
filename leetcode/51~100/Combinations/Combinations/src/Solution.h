@@ -15,4 +15,9 @@ public:
     * @param tmp 之前已经保存的结果，这里使用引用会减少多次复制
     */
     void doCombine(std::vector<int>& nums, std::vector<std::vector<int>>& res, int k, int previousIndex, int kth, std::vector<int>& tmp);
+    
+    /**
+    * 使用字典序来解
+    */
+    std::vector<std::vector<int>> combine2(int n, int k);
 };
