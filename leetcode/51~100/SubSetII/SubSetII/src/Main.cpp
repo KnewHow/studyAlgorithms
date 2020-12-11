@@ -1,5 +1,5 @@
-#include<vector>
 #include<iostream>
+#include<vector>
 #include "Solution.h"
 
 void printRes(const std::vector<std::vector<int>>& res) {
@@ -16,9 +16,10 @@ void printRes(const std::vector<std::vector<int>>& res) {
 }
 
 int main() {
-	std::vector<int> nums = { 1,2,2 };
+	std::vector<int> nums = { 4,4,4,1,4 };
 	Solution s;
-	auto res = s.subsets(nums);
+	auto res = s.subsetsWithDup(nums);
 	printRes(res);
 	std::cin.get();
+	return 0;
 }
