@@ -26,6 +26,7 @@ std::vector<TreeNode*> Solution::doGenerate(int start, int end)
 				res.push_back(root);
 			}
 		}
+
 	}
 	return res;
 }
